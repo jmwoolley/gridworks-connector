@@ -221,6 +221,8 @@ async def test_commissioning_http_requires_admin(hass, profile, hass_client, has
     response = await client.post(
         "/api/config/config_entries/options/flow", json={"handler": entry.entry_id}
     )
-    assert response.status == 403
+    # HA require_admin raises Unauthorized (401), even for an authenticated user.
+    # The successful GET above proves this is permission refusal, not a bad token.
+    assert response.status == 401
     assert not entry.options
     await hass.config_entries.async_unload(entry.entry_id)
