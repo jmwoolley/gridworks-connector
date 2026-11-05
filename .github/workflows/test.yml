@@ -5,7 +5,24 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CONNECTOR_TEST_BROKER: '1'
+    services:
+      rabbitmq:
+        image: rabbitmq:4.1-management
+        env:
+          RABBITMQ_DEFAULT_USER: connector_test
+          RABBITMQ_DEFAULT_PASS: ephemeral_ci_only
+        ports:
+          - 1885:1883
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
     steps:
+      - name: Enable MQTT on ephemeral development broker
+        run: docker exec ${{ job.services.rabbitmq.id }} rabbitmq-plugins enable rabbitmq_mqtt
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
