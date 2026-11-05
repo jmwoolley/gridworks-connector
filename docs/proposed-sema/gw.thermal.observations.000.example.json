@@ -1,0 +1,29 @@
+{
+  "TypeName": "gw.thermal.observations",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-000000000002",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "ha",
+  "Receiver": "cloud",
+  "CreatedMs": 1793908800000,
+  "Sequence": 2,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "Readings": [
+      {
+        "ChannelId": "state-1",
+        "Value": 45.0,
+        "ObservedMs": 1793908799000,
+        "ReceivedMs": 1793908800000,
+        "Quality": "reported",
+        "TimestampBasis": "ha_report_time"
+      }
+    ],
+    "ObservationSetId": "example-set",
+    "Gap": null
+  }
+}

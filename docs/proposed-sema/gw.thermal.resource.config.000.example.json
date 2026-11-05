@@ -1,0 +1,78 @@
+{
+  "TypeName": "gw.thermal.resource.config",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-000000000001",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "ha",
+  "Receiver": "cloud",
+  "CreatedMs": 1793908800000,
+  "Sequence": 1,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "Name": "Illustrative resource",
+    "Channels": [
+      {
+        "ChannelId": "state-1",
+        "Kind": "temperature",
+        "Unit": "\u00b0C",
+        "Limits": {
+          "Lower": 10.0,
+          "Upper": 90.0
+        },
+        "ModeId": null,
+        "ServiceId": null,
+        "MeterId": null,
+        "TimestampBasis": "ha_report_time"
+      },
+      {
+        "ChannelId": "outdoor-air",
+        "Kind": "outdoor_temperature",
+        "Unit": "\u00b0C",
+        "Limits": null,
+        "ModeId": null,
+        "ServiceId": null,
+        "MeterId": null,
+        "TimestampBasis": "ha_report_time"
+      }
+    ],
+    "Modes": [
+      {
+        "ModeId": "A",
+        "Label": "A",
+        "DeclaredAvailable": true
+      },
+      {
+        "ModeId": "B",
+        "Label": "B",
+        "DeclaredAvailable": true
+      }
+    ],
+    "Meters": [
+      {
+        "MeterId": "plant",
+        "Label": "Plant",
+        "Coverage": "All generators",
+        "ParentMeterId": null,
+        "Authoritative": false,
+        "Provenance": null
+      }
+    ],
+    "Services": [
+      {
+        "ServiceId": "heat",
+        "Label": "Heating",
+        "Kind": "heating",
+        "DeliveryFeedback": false
+      }
+    ],
+    "Capabilities": [
+      "shadow_only",
+      "illustrative_example"
+    ],
+    "Location": {}
+  }
+}

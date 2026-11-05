@@ -105,6 +105,15 @@ class Resource(Word):
                 raise ValueError(f"duplicate {attr}")
         if not self.channels or not any(c.kind == "temperature" for c in self.channels):
             raise ValueError("select at least one fingerprint temperature")
+        parents = {meter.meter_id: meter.parent_meter_id for meter in self.meters}
+        for identity in parents:
+            visited = set()
+            current = identity
+            while current is not None:
+                if current in visited or current not in parents:
+                    raise ValueError("meter parent cycle or unknown parent")
+                visited.add(current)
+                current = parents[current]
         modes = {m.mode_id for m in self.modes}
         meters = {m.meter_id for m in self.meters}
         services = {s.service_id for s in self.services}

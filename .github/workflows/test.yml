@@ -31,6 +31,7 @@ jobs:
       - run: ruff check custom_components/gridworks_connector tests tools
       - run: python -m tools.run_tests -q
       - run: python -m tools.generate_schemas
+      - run: python -m tools.generate_examples
       - run: git diff --exit-code docs/proposed-sema
       - run: python -m tools.build_package
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -139,7 +139,8 @@ class Editor:
         channel = {
             "channel_id": str(uuid4()),
             "kind": data["kind"],
-            "unit": data.get("unit") or None,
+            "unit": data.get("unit")
+            or (state.attributes.get("unit_of_measurement") if not data.get("attribute") else None),
             "limits": data.get("limits"),
             "entity_id": data["entity_id"],
             "attribute": data.get("attribute") or None,

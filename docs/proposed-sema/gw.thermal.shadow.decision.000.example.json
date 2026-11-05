@@ -1,0 +1,26 @@
+{
+  "TypeName": "gw.thermal.shadow.decision",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-00000000000a",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "ha",
+  "Receiver": "cloud",
+  "CreatedMs": 1793908800000,
+  "Sequence": 10,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "RequestId": "example-request",
+    "Disposition": "would_pursue_with_changes",
+    "PreferredMode": "A",
+    "SelectedMode": "B",
+    "DeliberateSubstitution": true,
+    "TargetStatus": "pursuing",
+    "Reason": "Illustrative local service priority",
+    "PartiallyElapsed": false,
+    "NotBeforeMs": null
+  }
+}

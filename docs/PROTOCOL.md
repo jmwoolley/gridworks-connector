@@ -25,6 +25,7 @@ Individual values are asynchronous, never a fictitious simultaneous snapshot.
 | resource.config | Chosen channels/limits, meter boundaries, modes, services, capabilities, location | HA |
 | observations | Individually timed values, units through channel definitions, quality and observation-set identity | HA |
 | context | Chosen meteorology/occupancy and provenance | HA |
+| context.calculated | Solar azimuth/zenith calculated from commissioned coordinates/time, with explicit source | Cloud |
 | mode.event | Actual mode, event time and active-since; unknown valid | HA |
 | availability | Per-mode availability, earliest start, estimated return and known power limits | HA |
 | service.status | Requested/active/delivered/adequate, each unknown when unsupported | HA |
@@ -81,3 +82,7 @@ Approve/revise the words, version seed and namespaced generation; map the provis
 envelope/topics onto GridWorks transport; identify test peer owners and credentials;
 confirm timing/retention limits and how live-versus-shadow routes are isolated.
 No production acceptance/contract should be fabricated to bypass Alice's operator hold.
+
+Both the HA endpoint and companion peer have bounded persistent outboxes/deduplication. A changed configuration opens a fresh session and reports unacknowledged old-session gaps; a restored heartbeat is never fresh liveness. The peer recovers request sequence from HA relationship status.
+
+Illustrative *.example.json files and proposed_seed_request.yaml are included. The seed uses the existing GridWorks request shape, but cannot be generated from the official registry until these words are approved/registered. Run python -m tools.generate_examples to reproduce.

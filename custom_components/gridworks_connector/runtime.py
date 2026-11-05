@@ -56,6 +56,13 @@ def read_value(state, binding, now_ms):
                 return None, observed, "invalid"
         except TypeError, ValueError:
             value = str(value)
+    if not binding.get("attribute"):
+        actual_unit = state.attributes.get("unit_of_measurement")
+        expected_unit = binding.get("unit")
+        if actual_unit and expected_unit and actual_unit != expected_unit:
+            return None, observed, "invalid"
+    if binding["kind"] in ("power", "energy", "occupant_count") and isinstance(value, (str, bool)):
+        return None, observed, "invalid"
     if binding["kind"] == "temperature":
         actual_unit = state.attributes.get("unit_of_measurement")
         if actual_unit and actual_unit != binding.get("unit"):

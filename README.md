@@ -26,7 +26,7 @@ updates HA or changes HVAC settings.
 5. Use **Embedded demonstration** initially. It needs no cloud account, keys or broker.
    It is a local peer, not proof of a connection to GridWorks.
 6. After commissioning, open the integration's device page for status, buttons and
-   the participation selector. **Configure** reopens the commissioning menu.
+   the participation selector. **Configure** reopens the commissioning menu. Use **Edit a commissioned definition** to revise channels, modes, meters and services.
 
 The older GridWorks API may coexist under its original separate domain; this draft
 repository distributes only the connector. There is no automatic migration of Pico data.
@@ -67,7 +67,7 @@ produces unknown/cannot-assess rather than fictitious capability.
 
 - **Send observations** publishes the current selected readings, mode/service evidence,
   availability and context.
-- **Exercise shadow protocol** delivers a clearly marked reassessment test notification
+- **Exercise shadow protocol** delivers clearly marked reassessment and weather-fallback test messages
   and advances the local message exchange. It never changes plant states.
 - The test peer proposes a five-minute **interval-average** target, not an instantaneous
   compressor command. HA reports a hypothetical decision; a deliberate substitution
@@ -99,7 +99,7 @@ The matching central fixtures require Linux; portable protocol tests can run on 
 
 ```text
 uv sync --group dev
-uv run pytest -q
+uv run python -m tools.run_tests -q
 uv run ruff check custom_components/gridworks_connector tests tools
 uv run python -m tools.generate_schemas
 uv run python -m tools.build_package

@@ -1,0 +1,29 @@
+{
+  "TypeName": "gw.thermal.context",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-000000000003",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "ha",
+  "Receiver": "cloud",
+  "CreatedMs": 1793908800000,
+  "Sequence": 3,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "Readings": [
+      {
+        "ChannelId": "outdoor-air",
+        "Value": null,
+        "ObservedMs": null,
+        "ReceivedMs": 1793908800000,
+        "Quality": "unknown",
+        "TimestampBasis": "ha_report_time"
+      }
+    ],
+    "ObservationSetId": "example-context",
+    "Gap": null
+  }
+}

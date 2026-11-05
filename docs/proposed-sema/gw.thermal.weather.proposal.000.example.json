@@ -1,0 +1,38 @@
+{
+  "TypeName": "gw.thermal.weather.proposal",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-00000000000d",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "cloud",
+  "Receiver": "ha",
+  "CreatedMs": 1793908800000,
+  "Sequence": 13,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "ProposalId": "example-catalog",
+    "Sources": [
+      {
+        "SourceId": "primary",
+        "Label": "Example primary",
+        "Coverage": "Illustration only",
+        "Variables": [
+          "temperature"
+        ],
+        "Provenance": "test_catalog"
+      },
+      {
+        "SourceId": "backup",
+        "Label": "Example backup",
+        "Coverage": "Illustration only",
+        "Variables": [
+          "temperature"
+        ],
+        "Provenance": "test_catalog"
+      }
+    ]
+  }
+}

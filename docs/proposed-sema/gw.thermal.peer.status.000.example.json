@@ -1,0 +1,23 @@
+{
+  "TypeName": "gw.thermal.peer.status",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-00000000000b",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "cloud",
+  "Receiver": "ha",
+  "CreatedMs": 1793908800000,
+  "Sequence": 11,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "LastRequestSequence": 1,
+    "CurrentRequestId": "example-request",
+    "Participation": "modified",
+    "LastPeerMessageId": "00000000-0000-4000-8000-000000000001",
+    "Ready": true,
+    "EngineHealthy": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "TypeName": "gw.thermal.availability",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-000000000006",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "ha",
+  "Receiver": "cloud",
+  "CreatedMs": 1793908800000,
+  "Sequence": 6,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "ModeId": "B",
+    "Available": false,
+    "NotBeforeMs": 1793908860000,
+    "ExpectedReturnMs": 1793908920000,
+    "MinPowerW": 3000.0,
+    "MaxPowerW": 6000.0
+  }
+}

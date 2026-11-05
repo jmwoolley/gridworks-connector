@@ -1,0 +1,22 @@
+{
+  "TypeName": "gw.thermal.weather.status",
+  "Version": "000",
+  "ProtocolRevision": "draft-2026-11-05",
+  "MessageId": "00000000-0000-4000-8000-00000000000f",
+  "ResourceId": "00000000-0000-4000-8000-000000000064",
+  "SessionId": "00000000-0000-4000-8000-0000000000c8",
+  "Sender": "cloud",
+  "Receiver": "ha",
+  "CreatedMs": 1793908800000,
+  "Sequence": 15,
+  "ConfigRevision": 1,
+  "Shadow": true,
+  "Historical": false,
+  "Payload": {
+    "TestScenario": true,
+    "SourceId": "backup",
+    "Reason": "Illustrative fallback, not an observed provider outage",
+    "IssuedMs": null,
+    "ValidMs": null
+  }
+}

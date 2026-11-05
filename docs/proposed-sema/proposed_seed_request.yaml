@@ -1,0 +1,44 @@
+# PROPOSED ONLY: register/review definitions before running the official generator.
+# Same seed-request shape as gridworks-flo; names are not currently published.
+initial_targets:
+  types:
+    gw.thermal.resource.config:
+      versions: ["000"]
+    gw.thermal.observations:
+      versions: ["000"]
+    gw.thermal.context:
+      versions: ["000"]
+    gw.thermal.context.calculated:
+      versions: ["000"]
+    gw.thermal.mode.event:
+      versions: ["000"]
+    gw.thermal.availability:
+      versions: ["000"]
+    gw.thermal.service.status:
+      versions: ["000"]
+    gw.thermal.participation:
+      versions: ["000"]
+    gw.thermal.shadow.request:
+      versions: ["000"]
+    gw.thermal.shadow.decision:
+      versions: ["000"]
+    gw.thermal.peer.status:
+      versions: ["000"]
+    gw.thermal.receipt:
+      versions: ["000"]
+    gw.thermal.weather.proposal:
+      versions: ["000"]
+    gw.thermal.weather.selection:
+      versions: ["000"]
+    gw.thermal.weather.status:
+      versions: ["000"]
+    gw.thermal.configuration.change:
+      versions: ["000"]
+    gw.thermal.reassessment:
+      versions: ["000"]
+    gw.thermal.gap:
+      versions: ["000"]
+    gw.thermal.error:
+      versions: ["000"]
+local_names:
+  strip_prefixes: [gw]
