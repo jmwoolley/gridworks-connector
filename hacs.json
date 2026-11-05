@@ -1,7 +1,5 @@
 {
-    "name": "GridWorks API",
-    "content_in_root": false,
-    "domains": ["gridworks_api"],
-    "country": "🪄"
+  "name": "GridWorks Connector",
+  "homeassistant": "2026.11.0",
+  "render_readme": true
 }
-  

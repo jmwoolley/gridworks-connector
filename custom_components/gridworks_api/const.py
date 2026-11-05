@@ -1,1 +1,0 @@
-DOMAIN = "gridworks_api"

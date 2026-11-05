@@ -1,0 +1,17 @@
+{
+  "domain": "gridworks_connector",
+  "name": "GridWorks Connector",
+  "version": "0.1.0-beta.1",
+  "codeowners": [
+    "@jmwoolley"
+  ],
+  "config_flow": true,
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "documentation": "https://github.com/jmwoolley/gridworks-connector",
+  "issue_tracker": "https://github.com/jmwoolley/gridworks-connector/issues",
+  "requirements": [
+    "paho-mqtt==2.1.0",
+    "pydantic==2.14.3"
+  ]
+}

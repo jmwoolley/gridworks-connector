@@ -1,0 +1,305 @@
+{
+  "title": "GridWorks Connector",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add GridWorks Connector",
+        "description": "Create a shadow-only resource. No equipment commands are supported.",
+        "data": {
+          "name": "Name"
+        }
+      },
+      "menu": {
+        "title": "Commission your resource",
+        "description": "{counts}. Add as many meaningful channels as needed. Finish requires a temperature channel with limits.",
+        "menu_options": {
+          "temperature": "Add a thermal-state channel",
+          "signal": "Add a meter, service, mode or context signal",
+          "mode": "Define an opaque mode",
+          "meter": "Define an electrical boundary",
+          "service": "Define a thermal service",
+          "site": "Site context",
+          "transport": "Choose the shadow peer",
+          "weather": "Review proposed weather sources",
+          "remove": "Remove a channel",
+          "review": "Review commissioning",
+          "finish": "Commissioning incomplete"
+        }
+      },
+      "temperature": {
+        "title": "Add a thermal-state channel",
+        "description": "Choose an existing entity. For climate entities, enter the temperature attribute. Limits must use the selected unit.",
+        "data": {
+          "entity_id": "Existing Home Assistant entity",
+          "attribute": "Attribute (leave empty to use entity state)",
+          "label": "Label",
+          "unit": "Unit of measurement",
+          "lower": "Lower commissioned limit",
+          "upper": "Upper commissioned limit",
+          "stale_seconds": "Mark data stale after (seconds)"
+        }
+      },
+      "signal": {
+        "title": "Add a meter, service, mode or context signal",
+        "description": "Choose the signal's actual meaning. A thermostat call is requested service, not confirmed delivery. Mode time constraints use UTC epoch milliseconds.",
+        "data": {
+          "entity_id": "Existing Home Assistant entity",
+          "label": "Label",
+          "kind": "Kind",
+          "attribute": "Attribute (leave empty to use entity state)",
+          "unit": "Unit of measurement",
+          "stale_seconds": "Mark data stale after (seconds)",
+          "mode_id": "Mode id",
+          "meter_id": "Meter id",
+          "service_id": "Service id"
+        }
+      },
+      "mode": {
+        "title": "Define an opaque mode",
+        "description": "A mode names a discrete controllable configuration. Availability is unknown unless declared or mapped. This does not control equipment.",
+        "data": {
+          "mode_id": "Mode id",
+          "label": "Label",
+          "availability": "Declared availability",
+          "state_value": "Corresponding local mode state (optional; stays local)"
+        }
+      },
+      "meter": {
+        "title": "Define an electrical boundary",
+        "description": "Describe the plant/generator coverage. Add a parent only for an overlapping submeter; parent and child must never be summed twice.",
+        "data": {
+          "meter_id": "Meter id",
+          "label": "Label",
+          "coverage": "What this meter measures",
+          "provenance": "Meter provenance (optional)",
+          "parent_meter_id": "Parent meter id"
+        }
+      },
+      "service": {
+        "title": "Define a thermal service",
+        "description": "Delivery feedback is optional. Missing feedback remains unknown.",
+        "data": {
+          "service_id": "Service id",
+          "label": "Label",
+          "kind": "Kind",
+          "delivery_feedback": "Delivery feedback"
+        }
+      },
+      "site": {
+        "title": "Site context",
+        "description": "Location is shared only with the configured test peer for weather-source review. Leave unavailable fields empty.",
+        "data": {
+          "address": "Address",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        }
+      },
+      "transport": {
+        "title": "Choose the shadow peer",
+        "description": "Embedded demonstration stays inside HA. External MQTT requires approved test credentials and draft-protocol support; it is not automatically compatible with production GridWorks.",
+        "data": {
+          "mode": "Mode"
+        }
+      },
+      "broker": {
+        "title": "Approved test broker",
+        "description": "Distinct exact topics only. TLS is mandatory outside loopback. Certificate/key paths refer to protected files on HA, not your workstation. Never paste private keys.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "tls": "Tls",
+          "send_topic": "Send topic",
+          "receive_topic": "Receive topic",
+          "username": "Username",
+          "ca_path": "Trusted CA file path",
+          "cert_path": "Client certificate path",
+          "key_path": "Private-key file path",
+          "test_endpoint_confirmed": "This is an authorized test-only endpoint"
+        }
+      },
+      "weather": {
+        "title": "Review proposed weather sources",
+        "description": "Choose primary and optional backups, then explicitly confirm. Test-catalog entries are not live provider discovery.",
+        "data": {
+          "primary_source": "Primary source",
+          "backup_sources": "Backup sources",
+          "confirmed": "I confirm these sources represent this site"
+        }
+      },
+      "remove": {
+        "title": "Remove a channel",
+        "description": "Re-adding a replaced sensor creates a new channel identity.",
+        "data": {
+          "channel_id": "Channel id"
+        }
+      },
+      "review": {
+        "title": "Review commissioning",
+        "description": "{summary}"
+      },
+      "finish": {
+        "title": "Commissioning incomplete",
+        "description": "Return to the menu and add a temperature channel with valid limits and complete transport configuration."
+      }
+    },
+    "error": {
+      "invalid_mapping": "Check the entity, units, limits and referenced identities. No changes were saved.",
+      "incomplete": "Add at least one temperature channel with explicit lower and upper limits.",
+      "weather_not_ready": "Weather review is available after setup when a peer has proposed sources. Return to the commissioning menu."
+    },
+    "abort": {
+      "already_configured": "This resource is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure GridWorks Connector"
+      },
+      "user": {
+        "title": "Add GridWorks Connector",
+        "description": "Create a shadow-only resource. No equipment commands are supported.",
+        "data": {
+          "name": "Name"
+        }
+      },
+      "menu": {
+        "title": "Commission your resource",
+        "description": "{counts}. Add as many meaningful channels as needed. Finish requires a temperature channel with limits.",
+        "menu_options": {
+          "temperature": "Add a thermal-state channel",
+          "signal": "Add a meter, service, mode or context signal",
+          "mode": "Define an opaque mode",
+          "meter": "Define an electrical boundary",
+          "service": "Define a thermal service",
+          "site": "Site context",
+          "transport": "Choose the shadow peer",
+          "weather": "Review proposed weather sources",
+          "remove": "Remove a channel",
+          "review": "Review commissioning",
+          "finish": "Commissioning incomplete"
+        }
+      },
+      "temperature": {
+        "title": "Add a thermal-state channel",
+        "description": "Choose an existing entity. For climate entities, enter the temperature attribute. Limits must use the selected unit.",
+        "data": {
+          "entity_id": "Existing Home Assistant entity",
+          "attribute": "Attribute (leave empty to use entity state)",
+          "label": "Label",
+          "unit": "Unit of measurement",
+          "lower": "Lower commissioned limit",
+          "upper": "Upper commissioned limit",
+          "stale_seconds": "Mark data stale after (seconds)"
+        }
+      },
+      "signal": {
+        "title": "Add a meter, service, mode or context signal",
+        "description": "Choose the signal's actual meaning. A thermostat call is requested service, not confirmed delivery. Mode time constraints use UTC epoch milliseconds.",
+        "data": {
+          "entity_id": "Existing Home Assistant entity",
+          "label": "Label",
+          "kind": "Kind",
+          "attribute": "Attribute (leave empty to use entity state)",
+          "unit": "Unit of measurement",
+          "stale_seconds": "Mark data stale after (seconds)",
+          "mode_id": "Mode id",
+          "meter_id": "Meter id",
+          "service_id": "Service id"
+        }
+      },
+      "mode": {
+        "title": "Define an opaque mode",
+        "description": "A mode names a discrete controllable configuration. Availability is unknown unless declared or mapped. This does not control equipment.",
+        "data": {
+          "mode_id": "Mode id",
+          "label": "Label",
+          "availability": "Declared availability",
+          "state_value": "Corresponding local mode state (optional; stays local)"
+        }
+      },
+      "meter": {
+        "title": "Define an electrical boundary",
+        "description": "Describe the plant/generator coverage. Add a parent only for an overlapping submeter; parent and child must never be summed twice.",
+        "data": {
+          "meter_id": "Meter id",
+          "label": "Label",
+          "coverage": "What this meter measures",
+          "provenance": "Meter provenance (optional)",
+          "parent_meter_id": "Parent meter id"
+        }
+      },
+      "service": {
+        "title": "Define a thermal service",
+        "description": "Delivery feedback is optional. Missing feedback remains unknown.",
+        "data": {
+          "service_id": "Service id",
+          "label": "Label",
+          "kind": "Kind",
+          "delivery_feedback": "Delivery feedback"
+        }
+      },
+      "site": {
+        "title": "Site context",
+        "description": "Location is shared only with the configured test peer for weather-source review. Leave unavailable fields empty.",
+        "data": {
+          "address": "Address",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        }
+      },
+      "transport": {
+        "title": "Choose the shadow peer",
+        "description": "Embedded demonstration stays inside HA. External MQTT requires approved test credentials and draft-protocol support; it is not automatically compatible with production GridWorks.",
+        "data": {
+          "mode": "Mode"
+        }
+      },
+      "broker": {
+        "title": "Approved test broker",
+        "description": "Distinct exact topics only. TLS is mandatory outside loopback. Certificate/key paths refer to protected files on HA, not your workstation. Never paste private keys.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "tls": "Tls",
+          "send_topic": "Send topic",
+          "receive_topic": "Receive topic",
+          "username": "Username",
+          "ca_path": "Trusted CA file path",
+          "cert_path": "Client certificate path",
+          "key_path": "Private-key file path",
+          "test_endpoint_confirmed": "This is an authorized test-only endpoint"
+        }
+      },
+      "weather": {
+        "title": "Review proposed weather sources",
+        "description": "Choose primary and optional backups, then explicitly confirm. Test-catalog entries are not live provider discovery.",
+        "data": {
+          "primary_source": "Primary source",
+          "backup_sources": "Backup sources",
+          "confirmed": "I confirm these sources represent this site"
+        }
+      },
+      "remove": {
+        "title": "Remove a channel",
+        "description": "Re-adding a replaced sensor creates a new channel identity.",
+        "data": {
+          "channel_id": "Channel id"
+        }
+      },
+      "review": {
+        "title": "Review commissioning",
+        "description": "{summary}"
+      },
+      "finish": {
+        "title": "Commissioning incomplete",
+        "description": "Return to the menu and add a temperature channel with valid limits and complete transport configuration."
+      }
+    },
+    "error": {
+      "invalid_mapping": "Check the entity, units, limits and referenced identities. No changes were saved.",
+      "incomplete": "Add at least one temperature channel with explicit lower and upper limits.",
+      "weather_not_ready": "Weather review is available after setup when a peer has proposed sources. Return to the commissioning menu."
+    }
+  }
+}

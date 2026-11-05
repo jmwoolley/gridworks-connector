@@ -1,0 +1,375 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "TypeName": {
+      "const": "gw.thermal.resource.config",
+      "type": "string"
+    },
+    "Version": {
+      "const": "000",
+      "default": "000",
+      "title": "Version",
+      "type": "string"
+    },
+    "ProtocolRevision": {
+      "const": "draft-2026-11-05",
+      "default": "draft-2026-11-05",
+      "title": "Protocolrevision",
+      "type": "string"
+    },
+    "MessageId": {
+      "title": "Messageid",
+      "type": "string"
+    },
+    "ResourceId": {
+      "title": "Resourceid",
+      "type": "string"
+    },
+    "SessionId": {
+      "title": "Sessionid",
+      "type": "string"
+    },
+    "Sender": {
+      "title": "Sender",
+      "type": "string"
+    },
+    "Receiver": {
+      "title": "Receiver",
+      "type": "string"
+    },
+    "CreatedMs": {
+      "minimum": 0,
+      "title": "Createdms",
+      "type": "integer"
+    },
+    "Sequence": {
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "ConfigRevision": {
+      "minimum": 1,
+      "title": "Configrevision",
+      "type": "integer"
+    },
+    "Shadow": {
+      "const": true,
+      "default": true,
+      "title": "Shadow",
+      "type": "boolean"
+    },
+    "Historical": {
+      "default": false,
+      "title": "Historical",
+      "type": "boolean"
+    },
+    "Payload": {
+      "additionalProperties": false,
+      "properties": {
+        "Name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "Channels": {
+          "items": {
+            "$ref": "#/$defs/Channel"
+          },
+          "title": "Channels",
+          "type": "array"
+        },
+        "Modes": {
+          "items": {
+            "$ref": "#/$defs/Mode"
+          },
+          "title": "Modes",
+          "type": "array"
+        },
+        "Meters": {
+          "items": {
+            "$ref": "#/$defs/Meter"
+          },
+          "title": "Meters",
+          "type": "array"
+        },
+        "Services": {
+          "items": {
+            "$ref": "#/$defs/Service"
+          },
+          "title": "Services",
+          "type": "array"
+        },
+        "Capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "Location": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "title": "Location",
+          "type": "object"
+        }
+      },
+      "required": [
+        "Name",
+        "Channels"
+      ],
+      "title": "Resource",
+      "type": "object"
+    }
+  },
+  "required": [
+    "TypeName",
+    "ResourceId",
+    "SessionId",
+    "Sender",
+    "Receiver",
+    "CreatedMs",
+    "Sequence",
+    "ConfigRevision",
+    "Payload"
+  ],
+  "title": "gw.thermal.resource.config",
+  "type": "object",
+  "$defs": {
+    "Bounds": {
+      "additionalProperties": false,
+      "properties": {
+        "Lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "Upper": {
+          "title": "Upper",
+          "type": "number"
+        }
+      },
+      "required": [
+        "Lower",
+        "Upper"
+      ],
+      "title": "Bounds",
+      "type": "object"
+    },
+    "Channel": {
+      "additionalProperties": false,
+      "properties": {
+        "ChannelId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Channelid",
+          "type": "string"
+        },
+        "Kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "Unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "Limits": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bounds"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ModeId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modeid"
+        },
+        "ServiceId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Serviceid"
+        },
+        "MeterId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Meterid"
+        },
+        "TimestampBasis": {
+          "default": "ha_report_time",
+          "title": "Timestampbasis",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ChannelId",
+        "Kind"
+      ],
+      "title": "Channel",
+      "type": "object"
+    },
+    "Meter": {
+      "additionalProperties": false,
+      "properties": {
+        "MeterId": {
+          "title": "Meterid",
+          "type": "string"
+        },
+        "Label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "Coverage": {
+          "title": "Coverage",
+          "type": "string"
+        },
+        "ParentMeterId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parentmeterid"
+        },
+        "Authoritative": {
+          "default": false,
+          "title": "Authoritative",
+          "type": "boolean"
+        },
+        "Provenance": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance"
+        }
+      },
+      "required": [
+        "MeterId",
+        "Label",
+        "Coverage"
+      ],
+      "title": "Meter",
+      "type": "object"
+    },
+    "Mode": {
+      "additionalProperties": false,
+      "properties": {
+        "ModeId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Modeid",
+          "type": "string"
+        },
+        "Label": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "DeclaredAvailable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Declaredavailable"
+        }
+      },
+      "required": [
+        "ModeId",
+        "Label"
+      ],
+      "title": "Mode",
+      "type": "object"
+    },
+    "Service": {
+      "additionalProperties": false,
+      "properties": {
+        "ServiceId": {
+          "title": "Serviceid",
+          "type": "string"
+        },
+        "Label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "Kind": {
+          "enum": [
+            "heating",
+            "cooling",
+            "dhw",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "DeliveryFeedback": {
+          "default": false,
+          "title": "Deliveryfeedback",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ServiceId",
+        "Label",
+        "Kind"
+      ],
+      "title": "Service",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "PROPOSED: not registered or generated by GridWorks Sema."
+}

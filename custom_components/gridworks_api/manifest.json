@@ -1,9 +1,0 @@
-{
-    "domain": "gridworks_api",
-    "name": "GridWorks API",
-    "version": "1.0.0",
-    "documentation": "https://github.com/thegridelectric/gridworks-homeassistant",
-    "requirements": [],
-    "codeowners": ["@thegridelectric"],
-    "config_flow": true
-}

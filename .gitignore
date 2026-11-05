@@ -1,3 +1,17 @@
 *.pyc
 __pycache__/
 .DS_Store
+.venv/
+.ha-venv/
+.python/
+.pytest_cache/
+.ruff_cache/
+.ha-test/
+dist/
+test-results/
+*.sqlite*
+*.key
+*.pem
+*.crt
+.env
+broker.local.json
