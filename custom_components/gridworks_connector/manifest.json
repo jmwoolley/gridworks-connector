@@ -1,7 +1,7 @@
 {
   "domain": "gridworks_connector",
   "name": "GridWorks Connector",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-beta.3",
   "codeowners": [
     "@jmwoolley"
   ],
@@ -13,5 +13,8 @@
   "requirements": [
     "paho-mqtt==2.1.0",
     "pydantic==2.14.1"
+  ],
+  "dependencies": [
+    "frontend"
   ]
 }

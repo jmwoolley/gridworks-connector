@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    from .panel import async_register_commissioning_panel
     from .runtime import Runtime
+
+    await async_register_commissioning_panel(hass)
 
     runtime = Runtime(hass, entry, dict(entry.options or entry.data))
     entry.runtime_data = runtime

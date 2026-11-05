@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from uuid import uuid4
 
 import probatio as vol
@@ -10,6 +11,7 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er, selector as sel
 
+from .commissioning import binding_category, overview, remove_definition
 from .const import DOMAIN, KINDS
 from .protocol import Bounds, Channel, Meter, Mode, Resource, Service
 
@@ -35,6 +37,10 @@ class Editor:
 
     profile = None
     editing = None
+    dashboard_mode = False
+    dashboard_form = None
+    dashboard_category = None
+    dashboard_checkpoint = None
 
     def initialize(self, source=None):
         self.profile = copy.deepcopy(
@@ -77,6 +83,10 @@ class Editor:
 
     async def async_step_menu(self, user_input=None):
         self.editing = None
+        if self.dashboard_mode:
+            self.dashboard_form = None
+            self.dashboard_checkpoint = None
+            return self.dashboard_result()
         return self.async_show_menu(
             step_id="menu",
             menu_options=[
@@ -92,6 +102,7 @@ class Editor:
                 "remove",
                 "review",
                 "finish",
+                *(["dashboard"] if isinstance(self, config_entries.OptionsFlow) else []),
             ],
             description_placeholders={
                 "counts": (
@@ -102,6 +113,118 @@ class Editor:
                 )
             },
         )
+
+    def dashboard_result(self, error=None):
+        """Use the normal admin-only HA options flow for the grouped page."""
+        from homeassistant.helpers import config_validation as cv
+
+        form = None
+        if self.dashboard_form:
+            form = dict(self.dashboard_form)
+            form["data_schema"] = vol.to_field_list(
+                form["data_schema"], custom_serializer=cv.custom_serializer
+            )
+        previous = dict(self.config_entry.options or self.config_entry.data)
+        state = dict(
+            categories=overview(self.profile),
+            form=form,
+            error=error,
+            dirty=self.profile != previous,
+        )
+        return self.async_show_form(
+            step_id="dashboard",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("action"): vol.In(
+                        ["open", "edit", "submit", "back", "remove", "save"]
+                    ),
+                    vol.Optional("step"): str,
+                    vol.Optional("target"): str,
+                    vol.Optional("category"): str,
+                    vol.Optional("data", default={}): dict,
+                }
+            ),
+            description_placeholders={"dashboard": json.dumps(state)},
+        )
+
+    async def async_step_dashboard(self, user_input=None):
+        self.dashboard_mode = True
+        if user_input is None:
+            return self.dashboard_result()
+        action = user_input["action"]
+        if action == "back":
+            if self.dashboard_checkpoint is not None:
+                self.profile = self.dashboard_checkpoint
+            self.dashboard_checkpoint = None
+            self.dashboard_form = None
+            self.editing = None
+            return self.dashboard_result()
+        if action == "remove":
+            try:
+                remove_definition(self.profile, user_input.get("target", ""))
+            except ValueError as err:
+                return self.dashboard_result(str(err))
+            return self.dashboard_result()
+        if action == "save":
+            if self.dashboard_form:
+                return self.dashboard_result("Finish or cancel the open editor before saving.")
+            result = await self.async_step_finish()
+        elif action == "edit":
+            self.dashboard_checkpoint = copy.deepcopy(self.profile)
+            try:
+                result = await self.async_step_edit({"target": user_input.get("target", "")})
+            except KeyError, ValueError, StopIteration:
+                return self.dashboard_result("This definition is no longer available.")
+        elif action == "open":
+            step = user_input.get("step")
+            if step not in {
+                "temperature",
+                "signal",
+                "mode",
+                "meter",
+                "service",
+                "site",
+                "transport",
+                "weather",
+            }:
+                return self.dashboard_result("Unknown commissioning action.")
+            self.editing = None
+            self.dashboard_checkpoint = copy.deepcopy(self.profile)
+            self.dashboard_category = user_input.get("category")
+            result = await getattr(self, "async_step_" + step)()
+            if step in {"site", "transport"}:
+                suggested = self.profile["location" if step == "site" else "transport"]
+                result["data_schema"] = self.add_suggested_values_to_schema(
+                    result["data_schema"], suggested
+                )
+            if step == "signal" and self.dashboard_category:
+                # Narrow the kind list to the category without changing wire meanings.
+                schema = dict(result["data_schema"].schema)
+                kind = next(key for key in schema if key.schema == "kind")
+                schema[kind] = choose(
+                    [
+                        k
+                        for k in KINDS
+                        if k != "temperature" and binding_category(k) == self.dashboard_category
+                    ]
+                )
+                result["data_schema"] = vol.Schema(schema)
+        elif action == "submit":
+            if not self.dashboard_form:
+                return self.dashboard_result("No editor is open.")
+            try:
+                data = self.dashboard_form["data_schema"](user_input.get("data", {}))
+            except vol.Invalid:
+                return self.dashboard_result(
+                    "Check the required fields and value formats. Nothing was saved."
+                )
+            result = await getattr(self, "async_step_" + self.dashboard_form["step_id"])(data)
+        else:
+            return self.dashboard_result("Unknown commissioning action.")
+        if result["type"] == "create_entry" or result.get("step_id") == "dashboard":
+            return result
+        self.dashboard_form = result
+        return self.dashboard_result()
 
     async def async_step_temperature(self, user_input=None):
         errors = {}
@@ -334,7 +457,8 @@ class Editor:
 
     async def async_step_transport(self, user_input=None):
         if user_input is not None:
-            self.profile["transport"] = {"mode": user_input["mode"]}
+            if user_input["mode"] != self.profile["transport"]["mode"]:
+                self.profile["transport"] = {"mode": user_input["mode"]}
             if user_input["mode"] == "mqtt":
                 return await self.async_step_broker()
             return await self.async_step_menu()

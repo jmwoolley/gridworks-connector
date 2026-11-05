@@ -12,7 +12,7 @@ work has not updated or installed anything on the live instance.
 
 ## Manual installation
 
-1. Download `gridworks-connector-0.1.0-beta.2.zip` from the successful branch build artifact,
+1. Download `gridworks-connector-0.1.0-beta.3.zip` from the successful branch build artifact,
    or obtain the same ZIP from the developer. BUILD_INFO.json identifies its exact commit.
 2. Extract only `custom_components/gridworks_connector` into the HA configuration directory.
    The usual resulting folder is `/config/custom_components/gridworks_connector`.
@@ -92,3 +92,25 @@ pydantic2.14.1. This prevented setup from loading with HTTP500 before any resour
 was commissioned. Beta.2 corrects that requirement and adds a constrained-install
 CI gate. Replace the component with beta.2 and restart HA before retrying. Do not
 change HA's own constraint file or manually force a different global package.
+
+## Grouped commissioning in beta.3
+
+After a resource exists, the integration's Configure button opens a local admin
+commissioning page. The same page appears as GridWorks Connector in the sidebar.
+It groups Thermal State Channels, Electric Meters, Operating Modes, Thermal Services,
+Site and Local Context, and Cloud Connection and Weather. Each section explains its
+purpose, lists the entries already configured and offers Add, Edit and Remove.
+
+Adding or editing a definition applies it to the visible draft. Save configuration
+commits the definitions and reloads the connector; Discard changes restores the saved
+configuration. Cancel closes an editor without losing earlier draft additions.
+Referenced meter/mode/service definitions cannot be removed before their dependent
+observations are reassigned or removed. Weather confirmation explicitly sends its
+selection to the shadow peer when that form is submitted.
+
+For an existing installation, overwrite only the extracted gridworks_connector
+component with beta.3, including its new frontend folder, and restart HA. Keep
+normal HA configuration/storage intact. Existing entries and stable channel IDs
+are read directly; no deletion or recommissioning is required. Refresh the browser
+after the restart, then use Configure. No other HA app/add-on or cloud credentials
+are needed for the grouped embedded demonstration.

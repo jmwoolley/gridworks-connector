@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CONNECTOR_TEST_BROKER: '1'
+      CONNECTOR_UI_FIXTURE: 'dist/commissioning-ui-fixture.json'
     services:
       rabbitmq:
         image: rabbitmq:4.1-management
@@ -31,6 +32,7 @@ jobs:
       - name: Install component dependencies with Home Assistant package constraints
         run: python -m tools.install_ha_requirements
       - run: ruff check custom_components/gridworks_connector tests tools
+      - run: node --check custom_components/gridworks_connector/frontend/commissioning.js
       - run: python -m tools.run_tests -q
       - run: python -m tools.generate_schemas
       - run: python -m tools.generate_examples

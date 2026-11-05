@@ -24,7 +24,8 @@
           "remove": "Remove a channel",
           "review": "Review commissioning",
           "finish": "Save configuration",
-          "edit": "Edit a commissioned definition"
+          "edit": "Edit a commissioned definition",
+          "dashboard": "Grouped commissioning page"
         }
       },
       "temperature": {
@@ -147,6 +148,17 @@
         "description": "Changing a source creates a new channel identity; changing its label or limits preserves identity with a new configuration revision.",
         "data": {
           "target": "Definition to edit"
+        }
+      },
+      "dashboard": {
+        "title": "Commission your resource",
+        "description": "The grouped commissioning page is available from GridWorks Connector → Configure.",
+        "data": {
+          "action": "Action",
+          "step": "Editor",
+          "target": "Definition",
+          "category": "Category",
+          "data": "Values"
         }
       }
     },
@@ -186,7 +198,8 @@
           "remove": "Remove a channel",
           "review": "Review commissioning",
           "finish": "Save configuration",
-          "edit": "Edit a commissioned definition"
+          "edit": "Edit a commissioned definition",
+          "dashboard": "Grouped commissioning page"
         }
       },
       "temperature": {
@@ -309,6 +322,17 @@
         "description": "Changing a source creates a new channel identity; changing its label or limits preserves identity with a new configuration revision.",
         "data": {
           "target": "Definition to edit"
+        }
+      },
+      "dashboard": {
+        "title": "Commission your resource",
+        "description": "The grouped commissioning page is available from GridWorks Connector → Configure.",
+        "data": {
+          "action": "Action",
+          "step": "Editor",
+          "target": "Definition",
+          "category": "Category",
+          "data": "Values"
         }
       }
     },
