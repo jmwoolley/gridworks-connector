@@ -134,3 +134,89 @@ async def test_cancel_multistep_connection_editor_restores_draft(hass, profile):
     assert not view(flow)["dirty"]
     assert view(flow)["categories"][-1]["summary"] == "Embedded demonstration"
     await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_browser_http_round_trip_serializes_dashboard_editors_and_save(
+    hass, profile, hass_client
+):
+    # Reproduce the real site's temperature-only saved configuration.
+    profile["modes"] = []
+    profile["meters"] = []
+    profile["services"] = []
+    entry, existing = await start(hass, profile)
+    hass.config_entries.options.async_abort(existing["flow_id"])
+    client = await hass_client()
+    base = "/api/config/config_entries/options/flow"
+    response = await client.post(base, json={"handler": entry.entry_id})
+    assert response.status == 200, await response.text()
+    initial = await response.json()
+    endpoint = base + "/" + initial["flow_id"]
+    fixture = {}
+
+    async def post(data):
+        response = await client.post(endpoint, json=data)
+        assert response.status == 200, await response.text()
+        return await response.json()
+
+    result = await post({"next_step_id": "dashboard"})
+    fixture["initial"] = result
+    assert len(view(result)["categories"][0]["entries"]) == 1
+    wrapper = {field["name"]: field for field in result["data_schema"]}
+    assert "object" in wrapper["data"]["selector"]
+    response = await client.get(endpoint)
+    assert response.status == 200
+    assert view(await response.json())["form"] is None
+
+    result = await post({"action": "open", "step": "temperature", "category": "thermal"})
+    fixture["temperature"] = result
+    result = await post({"action": "submit", "data": []})
+    assert "must be an object" in view(result)["error"]
+    assert not entry.options
+    result = await post(
+        {
+            "action": "submit",
+            "data": {
+                "entity_id": "sensor.test_temperature",
+                "label": "Added state",
+                "unit": "°C",
+                "lower": 20,
+                "upper": 80,
+            },
+        }
+    )
+    fixture["added"] = result
+    assert view(result)["dirty"]
+    result = await post({"action": "save"})
+    assert result["type"] == "create_entry"
+    assert "data" not in result
+    await hass.async_block_till_done()
+    assert len(entry.runtime_data.profile["bindings"]) == 2
+    assert entry.options["bindings"][0]["channel_id"] == "temperature-1"
+
+    response = await client.post(base, json={"handler": entry.entry_id})
+    assert response.status == 200
+    reopened = await response.json()
+    endpoint = base + "/" + reopened["flow_id"]
+    fixture["saved"] = await post({"next_step_id": "dashboard"})
+    assert not view(fixture["saved"])["dirty"]
+    response = await client.get("/gridworks_connector_assets/errors.mjs")
+    assert response.status == 200
+    assert response.content_type in {"text/javascript", "application/javascript"}
+    assert "describeApiError" in await response.text()
+    if output := os.environ.get("CONNECTOR_UI_FIXTURE"):
+        Path(output).write_text(json.dumps(fixture, indent=2), encoding="utf-8")
+    await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_commissioning_http_requires_admin(
+    hass, profile, hass_client, hass_read_only_access_token
+):
+    entry, existing = await start(hass, profile)
+    hass.config_entries.options.async_abort(existing["flow_id"])
+    client = await hass_client(hass_read_only_access_token)
+    response = await client.post(
+        "/api/config/config_entries/options/flow", json={"handler": entry.entry_id}
+    )
+    assert response.status == 403
+    assert not entry.options
+    await hass.config_entries.async_unload(entry.entry_id)

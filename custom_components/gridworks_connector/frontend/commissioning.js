@@ -1,4 +1,5 @@
 /* Local HA admin UI. All edits use HA's authenticated options-flow API. */
+import { describeApiError } from "./errors.mjs";
 const DOMAIN = "gridworks_connector";
 const FLOW = "config/config_entries/options/flow";
 const labels = {
@@ -59,7 +60,7 @@ export class GridworksCommissioning extends HTMLElement {
       this._entry=this._entries.find(item=>item.entry_id===requested) || (!requested ? this._entries[0] : null);
       if (!this._entry) throw Error("No matching GridWorks resource was found. Add the integration first, then open Configure.");
       await this.begin();
-    } catch (err) { this._error=err.message || String(err); }
+    } catch (err) { this._error=describeApiError(err); }
     finally { this._busy=false; this.render(); }
   }
   async begin() {
@@ -93,7 +94,7 @@ export class GridworksCommissioning extends HTMLElement {
         const next=JSON.parse(result.description_placeholders.dashboard);
         this.apply(result, data.action==="submit" && !!(next.error || Object.keys(next.form?.errors || {}).length));
       }
-    } catch (err) { this._error=err.message || "The edit session could not be updated. Refresh to reopen the saved configuration."; }
+    } catch (err) { this._error=describeApiError(err); }
     finally { this._busy=false; this.render(); }
   }
   async discard(entry) {
@@ -103,7 +104,7 @@ export class GridworksCommissioning extends HTMLElement {
       if (this._flowId) await this.hass.callApi("DELETE", `${FLOW}/${this._flowId}`);
       this._flowId=null; if (entry) this._entry=entry;
       await this.begin(); this._saved=false; this._error=null;
-    } catch(err) {this._error=err.message || String(err);}
+    } catch(err) {this._error=describeApiError(err);}
     finally {this._busy=false;this.render();}
   }
   button(label, callback, options={}) { return node("button", {type:"button", text:label, disabled:this._busy, onClick:callback, ...options}); }

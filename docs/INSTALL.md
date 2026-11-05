@@ -12,7 +12,7 @@ work has not updated or installed anything on the live instance.
 
 ## Manual installation
 
-1. Download `gridworks-connector-0.1.0-beta.3.zip` from the successful branch build artifact,
+1. Download `gridworks-connector-0.1.0-beta.4.zip` from the successful branch build artifact,
    or obtain the same ZIP from the developer. BUILD_INFO.json identifies its exact commit.
 2. Extract only `custom_components/gridworks_connector` into the HA configuration directory.
    The usual resulting folder is `/config/custom_components/gridworks_connector`.

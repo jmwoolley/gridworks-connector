@@ -141,7 +141,7 @@ class Editor:
                     vol.Optional("step"): str,
                     vol.Optional("target"): str,
                     vol.Optional("category"): str,
-                    vol.Optional("data", default={}): dict,
+                    vol.Optional("data", default={}): sel.ObjectSelector(),
                 }
             ),
             description_placeholders={"dashboard": json.dumps(state)},
@@ -212,8 +212,11 @@ class Editor:
         elif action == "submit":
             if not self.dashboard_form:
                 return self.dashboard_result("No editor is open.")
+            raw_data = user_input.get("data", {})
+            if not isinstance(raw_data, dict):
+                return self.dashboard_result("Editor values must be an object of named fields.")
             try:
-                data = self.dashboard_form["data_schema"](user_input.get("data", {}))
+                data = self.dashboard_form["data_schema"](raw_data)
             except vol.Invalid:
                 return self.dashboard_result(
                     "Check the required fields and value formats. Nothing was saved."

@@ -33,6 +33,7 @@ jobs:
         run: python -m tools.install_ha_requirements
       - run: ruff check custom_components/gridworks_connector tests tools
       - run: node --check custom_components/gridworks_connector/frontend/commissioning.js
+      - run: node --test tests/test_ui_errors.mjs
       - run: python -m tools.run_tests -q
       - run: python -m tools.generate_schemas
       - run: python -m tools.generate_examples
