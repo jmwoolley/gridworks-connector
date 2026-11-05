@@ -66,6 +66,12 @@
     "Payload": {
       "additionalProperties": false,
       "properties": {
+        "LastRequestSequence": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Lastrequestsequence",
+          "type": "integer"
+        },
         "CurrentRequestId": {
           "anyOf": [
             {

@@ -45,7 +45,9 @@ def read_value(state, binding, now_ms):
     observed = int(stamp.timestamp() * 1000) if stamp else None
     if value in ("unknown", "unavailable", None):
         return None, observed, "unavailable" if value == "unavailable" else "unknown"
-    if isinstance(value, str) and value.lower() in ("on", "off", "true", "false"):
+    if binding["kind"] == "current_mode":
+        value = str(value)
+    elif isinstance(value, str) and value.lower() in ("on", "off", "true", "false"):
         value = value.lower() in ("on", "true")
     else:
         try:
@@ -75,6 +77,7 @@ class Runtime:
         self.signal = f"{DOMAIN}_{entry.entry_id}"
         self.lock = asyncio.Lock()
         self.journal = None
+        self.peer_journal = None
         self.engine = None
         self.peer = None
         self.transport = None
@@ -121,9 +124,14 @@ class Runtime:
                 clock_ms,
             )
 
+            if self.profile["transport"]["mode"] == "local_demo":
+                self.peer_journal = Journal(
+                    self.hass.config.path(".storage", f"{DOMAIN}_{self.entry.entry_id}_peer.sqlite")
+                )
+                self.peer = ShadowPeer(clock_ms, self.peer_journal)
+
         await self.hass.async_add_executor_job(build)
         if self.profile["transport"]["mode"] == "local_demo":
-            self.peer = ShadowPeer(clock_ms)
             self.connected = True
         else:
             try:
@@ -152,7 +160,7 @@ class Runtime:
     @callback
     def _state_changed(self, event):
         if not self.closed:
-            self.spawn(self.snapshot())
+            self.spawn(self.snapshot({event.data["entity_id"]: event.data.get("new_state")}))
 
     @callback
     def _periodic(self, now):
@@ -252,7 +260,7 @@ class Runtime:
                     msg = msg.model_copy(update={"historical": True})
                 self.transport.send(msg)
 
-    async def snapshot(self):
+    async def snapshot(self, overrides=None):
         now = clock_ms()
         readings, by_kind = [], {}
         registry = er.async_get(self.hass)
@@ -262,7 +270,11 @@ class Runtime:
                 item = registry.async_get(binding["registry_id"])
                 if item:
                     entity_id = item.entity_id
-            state = self.hass.states.get(entity_id)
+            state = (
+                overrides[entity_id]
+                if overrides and entity_id in overrides
+                else self.hass.states.get(entity_id)
+            )
             value, stamp, quality = read_value(state, binding, now)
             reading = Reading(
                 channel_id=binding["channel_id"],
@@ -376,7 +388,11 @@ class Runtime:
             if dropped > self.journal.get("gap_reported", 0):
                 result.append(
                     self.engine.message(
-                        "gap", Gap(dropped_count=dropped, reason="bounded_outbox_overflow")
+                        "gap",
+                        Gap(
+                            dropped_count=dropped,
+                            reason=self.journal.get("gap_reason", "bounded_outbox_overflow"),
+                        ),
                     )
                 )
                 self.journal.set("gap_reported", dropped)
@@ -390,7 +406,7 @@ class Runtime:
         if self.peer:
             async with self.lock:
                 messages = await self.hass.async_add_executor_job(
-                    lambda: [self.peer.heartbeat(), *self.peer.propose()]
+                    lambda: [self.peer.heartbeat(), *self.peer.propose(), *self.peer.pending()]
                 )
             for message in messages:
                 await self.incoming(message.model_dump(by_alias=True))
@@ -443,7 +459,9 @@ class Runtime:
             return
         async with self.lock:
             notice = await self.hass.async_add_executor_job(self.peer.reassessment_scenario)
+            weather = await self.hass.async_add_executor_job(self.peer.weather_fallback_scenario)
         await self.incoming(notice.model_dump(by_alias=True))
+        await self.incoming(weather.model_dump(by_alias=True))
         self.last_protocol_check = "reassessment_scenario_exercised_not_full_cloud_test"
         await self.tick()
 
@@ -460,3 +478,5 @@ class Runtime:
         async with self.lock:
             if self.journal:
                 await self.hass.async_add_executor_job(self.journal.close)
+            if self.peer_journal:
+                await self.hass.async_add_executor_job(self.peer_journal.close)

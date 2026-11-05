@@ -38,8 +38,13 @@ class ShadowEngine:
         self.journal = journal
         self.clock = clock
         self.sender, self.receiver = sender, receiver
-        self.session_id = journal.get("session", str(uuid4()))
+        changed = journal.get("config_revision") != config_revision
+        self.session_id = str(uuid4()) if changed else journal.get("session", str(uuid4()))
         journal.set("session", self.session_id)
+        journal.set("config_revision", config_revision)
+        if changed:
+            journal.set("request_sequence", 0)
+        journal.archive_other_sessions(self.session_id, config_revision)
         self.sequence = journal.get("sequence", 0)
         self.participation = journal.get("participation", "pursuing")
         self.current_request = None
@@ -56,6 +61,7 @@ class ShadowEngine:
         self.weather_proposal = None
         self.weather_selection = journal.get("weather_selection")
         self.weather_status = None
+        self.calculated_context = None
         self.notices = journal.get("notices", {})
         self.last_decision = None
         self.last_error = None
@@ -98,6 +104,7 @@ class ShadowEngine:
                 else None,
                 participation=self.participation,
                 last_peer_message_id=self.last_peer_id,
+                last_request_sequence=self.request_sequence,
                 ready=self.peer_ready,
                 engine_healthy=True,
             ),
@@ -158,6 +165,8 @@ class ShadowEngine:
                 self.last_error = "peer_current_request_disagreement"
         elif kind == "weather.proposal":
             self.weather_proposal = body
+        elif kind == "context.calculated":
+            self.calculated_context = body
         elif kind == "weather.status":
             self.weather_status = body
         elif kind == "reassessment":

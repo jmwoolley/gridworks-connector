@@ -23,7 +23,8 @@
           "weather": "Review proposed weather sources",
           "remove": "Remove a channel",
           "review": "Review commissioning",
-          "finish": "Commissioning incomplete"
+          "finish": "Commissioning incomplete",
+          "edit": "Edit a commissioned definition"
         }
       },
       "temperature": {
@@ -140,6 +141,13 @@
       "finish": {
         "title": "Commissioning incomplete",
         "description": "Return to the menu and add a temperature channel with valid limits and complete transport configuration."
+      },
+      "edit": {
+        "title": "Edit a commissioned definition",
+        "description": "Changing a source creates a new channel identity; changing its label or limits preserves identity with a new configuration revision.",
+        "data": {
+          "target": "Definition to edit"
+        }
       }
     },
     "error": {
@@ -177,7 +185,8 @@
           "weather": "Review proposed weather sources",
           "remove": "Remove a channel",
           "review": "Review commissioning",
-          "finish": "Commissioning incomplete"
+          "finish": "Commissioning incomplete",
+          "edit": "Edit a commissioned definition"
         }
       },
       "temperature": {
@@ -294,6 +303,13 @@
       "finish": {
         "title": "Commissioning incomplete",
         "description": "Return to the menu and add a temperature channel with valid limits and complete transport configuration."
+      },
+      "edit": {
+        "title": "Edit a commissioned definition",
+        "description": "Changing a source creates a new channel identity; changing its label or limits preserves identity with a new configuration revision.",
+        "data": {
+          "target": "Definition to edit"
+        }
       }
     },
     "error": {

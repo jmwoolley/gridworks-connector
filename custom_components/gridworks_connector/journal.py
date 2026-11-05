@@ -56,6 +56,20 @@ class Journal:
                     "INSERT OR REPLACE INTO state VALUES ('dropped',?)", (json.dumps(count),)
                 )
 
+    def archive_other_sessions(self, session_id, revision):
+        rows = self.db.execute("SELECT id,body FROM outbox").fetchall()
+        retired = []
+        for identity, body in rows:
+            message = Message.model_validate_json(body)
+            if message.session_id != session_id or message.config_revision != revision:
+                retired.append((identity,))
+        if retired:
+            with self.db:
+                self.db.executemany("DELETE FROM outbox WHERE id=?", retired)
+            self.set("dropped", self.get("dropped", 0) + len(retired))
+            self.set("gap_reason", "configuration_changed_unacknowledged_messages_archived")
+        return len(retired)
+
     def ack(self, message_id):
         with self.db:
             self.db.execute("DELETE FROM outbox WHERE id=?", (message_id,))

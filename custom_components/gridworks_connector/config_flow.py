@@ -34,6 +34,7 @@ class Editor:
     """Repeated menu steps make the channel list extensible, with per-channel limits."""
 
     profile = None
+    editing = None
 
     def initialize(self, source=None):
         self.profile = copy.deepcopy(
@@ -75,6 +76,7 @@ class Editor:
         )
 
     async def async_step_menu(self, user_input=None):
+        self.editing = None
         return self.async_show_menu(
             step_id="menu",
             menu_options=[
@@ -86,6 +88,7 @@ class Editor:
                 "site",
                 "transport",
                 "weather",
+                "edit",
                 "remove",
                 "review",
                 "finish",
@@ -153,6 +156,20 @@ class Editor:
             if k not in ("entity_id", "attribute", "registry_id", "label", "stale_seconds")
         }
         Channel.model_validate(public)
+
+        if self.editing and self.editing[0] == "bindings":
+            previous = self.editing[2]
+            if (channel["entity_id"], channel["attribute"], channel["kind"]) == (
+                previous["entity_id"],
+                previous.get("attribute"),
+                previous["kind"],
+            ):
+                channel["channel_id"] = previous["channel_id"]
+            self.profile["bindings"] = [
+                item
+                for item in self.profile["bindings"]
+                if item["channel_id"] != previous["channel_id"]
+            ]
         self.profile["bindings"].append(channel)
 
     async def async_step_signal(self, user_input=None):
@@ -192,8 +209,17 @@ class Editor:
             ]
             try:
                 item = Mode.model_validate(data)
-                if item.mode_id in [m["mode_id"] for m in self.profile["modes"]]:
+                if item.mode_id in [m["mode_id"] for m in self.profile["modes"]] and not (
+                    self.editing
+                    and self.editing[0] == "modes"
+                    and self.editing[2]["mode_id"] == item.mode_id
+                ):
                     raise ValueError("duplicate mode")
+                if self.editing and self.editing[0] == "modes":
+                    previous_id = self.editing[2]["mode_id"]
+                    self.profile["modes"] = [
+                        old for old in self.profile["modes"] if old["mode_id"] != previous_id
+                    ]
                 self.profile["modes"].append({**item.model_dump(), "state_value": state_value})
                 return await self.async_step_menu()
             except ValueError:
@@ -218,12 +244,21 @@ class Editor:
         if user_input is not None:
             try:
                 item = Meter.model_validate(user_input)
-                if item.meter_id in [m["meter_id"] for m in self.profile["meters"]]:
+                if item.meter_id in [m["meter_id"] for m in self.profile["meters"]] and not (
+                    self.editing
+                    and self.editing[0] == "meters"
+                    and self.editing[2]["meter_id"] == item.meter_id
+                ):
                     raise ValueError("duplicate meter")
                 if item.parent_meter_id and item.parent_meter_id not in [
                     m["meter_id"] for m in self.profile["meters"]
                 ]:
                     raise ValueError("unknown parent")
+                if self.editing and self.editing[0] == "meters":
+                    previous_id = self.editing[2]["meter_id"]
+                    self.profile["meters"] = [
+                        old for old in self.profile["meters"] if old["meter_id"] != previous_id
+                    ]
                 self.profile["meters"].append(item.model_dump())
                 return await self.async_step_menu()
             except ValueError:
@@ -245,8 +280,17 @@ class Editor:
         if user_input is not None:
             try:
                 item = Service.model_validate(user_input)
-                if item.service_id in [s["service_id"] for s in self.profile["services"]]:
+                if item.service_id in [s["service_id"] for s in self.profile["services"]] and not (
+                    self.editing
+                    and self.editing[0] == "services"
+                    and self.editing[2]["service_id"] == item.service_id
+                ):
                     raise ValueError("duplicate service")
+                if self.editing and self.editing[0] == "services":
+                    previous_id = self.editing[2]["service_id"]
+                    self.profile["services"] = [
+                        old for old in self.profile["services"] if old["service_id"] != previous_id
+                    ]
                 self.profile["services"].append(item.model_dump())
                 return await self.async_step_menu()
             except ValueError:
@@ -343,6 +387,8 @@ class Editor:
         runtime = getattr(entry, "runtime_data", None) if entry else None
         proposal = runtime.engine.weather_proposal if runtime else None
         if proposal is None:
+            if user_input is not None:
+                return await self.async_step_menu()
             return self.async_show_form(
                 step_id="weather", data_schema=vol.Schema({}), errors={"base": "weather_not_ready"}
             )
@@ -373,6 +419,59 @@ class Editor:
                 }
             ),
         )
+
+    async def async_step_edit(self, user_input=None):
+        options = []
+        for group, field in (
+            ("bindings", "channel_id"),
+            ("modes", "mode_id"),
+            ("meters", "meter_id"),
+            ("services", "service_id"),
+        ):
+            for item in self.profile[group]:
+                options.append(
+                    {
+                        "value": group + "/" + item[field],
+                        "label": group + ": " + item.get("label", item[field]),
+                    }
+                )
+        if not options:
+            return await self.async_step_menu()
+        if user_input is None:
+            return self.async_show_form(
+                step_id="edit",
+                data_schema=vol.Schema(
+                    {
+                        vol.Required("target"): sel.SelectSelector(
+                            sel.SelectSelectorConfig(options=options, mode="dropdown")
+                        ),
+                    }
+                ),
+            )
+        group, identity = user_input["target"].split("/", 1)
+        field = {
+            "bindings": "channel_id",
+            "modes": "mode_id",
+            "meters": "meter_id",
+            "services": "service_id",
+        }[group]
+        item = next(x for x in self.profile[group] if x[field] == identity)
+        self.editing = (group, field, copy.deepcopy(item))
+        step = {"modes": "mode", "meters": "meter", "services": "service"}.get(group)
+        if group == "bindings":
+            step = "temperature" if item["kind"] == "temperature" else "signal"
+        result = await getattr(self, "async_step_" + step)()
+        suggested = dict(item)
+        if step == "temperature":
+            suggested.update(item["limits"])
+        if step == "mode":
+            suggested["availability"] = {None: "unknown", True: "yes", False: "no"}[
+                item.get("declared_available")
+            ]
+        result["data_schema"] = self.add_suggested_values_to_schema(
+            result["data_schema"], suggested
+        )
+        return result
 
     async def async_step_remove(self, user_input=None):
         if user_input is not None:

@@ -66,6 +66,11 @@
     "Payload": {
       "additionalProperties": false,
       "properties": {
+        "TestScenario": {
+          "default": false,
+          "title": "Testscenario",
+          "type": "boolean"
+        },
         "SourceId": {
           "anyOf": [
             {

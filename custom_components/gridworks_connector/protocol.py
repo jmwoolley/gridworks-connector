@@ -209,6 +209,7 @@ class Decision(Word):
 
 
 class Heartbeat(Word):
+    last_request_sequence: int = Field(default=0, ge=0)
     current_request_id: str | None = None
     participation: Literal["pursuing", "modified", "paused", "unknown"]
     last_peer_message_id: str | None = None
@@ -242,7 +243,15 @@ class WeatherSelection(Word):
     confirmed: bool
 
 
+class CalculatedContext(Word):
+    observed_ms: int
+    source: str
+    solar_azimuth_deg: float
+    solar_zenith_deg: float
+
+
 class WeatherStatus(Word):
+    test_scenario: bool = False
     source_id: str | None
     reason: str | None = None
     issued_ms: int | None = None
@@ -278,6 +287,7 @@ PAYLOADS = {
     "resource.config": Resource,
     "observations": Observations,
     "context": Observations,
+    "context.calculated": CalculatedContext,
     "mode.event": ModeEvent,
     "availability": Availability,
     "service.status": ServiceStatus,
