@@ -11,7 +11,7 @@
       },
       "menu": {
         "title": "Commission your resource",
-        "description": "{counts}. Add as many meaningful channels as needed. Finish requires a temperature channel with limits.",
+        "description": "{counts}. Add definitions as needed. Saving requires at least one temperature channel with limits. Reopen Configure at any time to continue.",
         "menu_options": {
           "temperature": "Add a thermal-state channel",
           "signal": "Add a meter, service, mode or context signal",
@@ -23,7 +23,7 @@
           "weather": "Review proposed weather sources",
           "remove": "Remove a channel",
           "review": "Review commissioning",
-          "finish": "Commissioning incomplete",
+          "finish": "Save configuration",
           "edit": "Edit a commissioned definition"
         }
       },
@@ -173,7 +173,7 @@
       },
       "menu": {
         "title": "Commission your resource",
-        "description": "{counts}. Add as many meaningful channels as needed. Finish requires a temperature channel with limits.",
+        "description": "{counts}. Add definitions as needed. Saving requires at least one temperature channel with limits. Reopen Configure at any time to continue.",
         "menu_options": {
           "temperature": "Add a thermal-state channel",
           "signal": "Add a meter, service, mode or context signal",
@@ -185,7 +185,7 @@
           "weather": "Review proposed weather sources",
           "remove": "Remove a channel",
           "review": "Review commissioning",
-          "finish": "Commissioning incomplete",
+          "finish": "Save configuration",
           "edit": "Edit a commissioned definition"
         }
       },
