@@ -24,6 +24,7 @@ class ShadowMqtt:
             clean_session=True,
         )
         self.client.on_connect = self._connect
+        self.client.on_subscribe = self._subscribe
         self.client.on_disconnect = self._disconnect
         self.client.on_message = self._message
         self.client.reconnect_delay_set(1, 60)
@@ -54,9 +55,16 @@ class ShadowMqtt:
         self.client.loop_start()
 
     def _connect(self, client, userdata, flags, reason_code, properties):
-        self.connected = not reason_code.is_failure
-        if self.connected:
-            client.subscribe(self.receive_topic, qos=1)
+        self.connected = False
+        if reason_code.is_failure:
+            self.on_connection(False)
+            return
+        _result, self._subscription_mid = client.subscribe(self.receive_topic, qos=1)
+
+    def _subscribe(self, client, userdata, mid, reason_codes, properties):
+        if mid != getattr(self, "_subscription_mid", None):
+            return
+        self.connected = bool(reason_codes) and not any(code.is_failure for code in reason_codes)
         self.on_connection(self.connected)
 
     def _disconnect(self, client, userdata, flags, reason_code, properties):
