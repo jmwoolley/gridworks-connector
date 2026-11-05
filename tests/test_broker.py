@@ -8,7 +8,7 @@ import time
 import pytest
 
 from custom_components.gridworks_connector.peer import ShadowPeer
-from custom_components.gridworks_connector.protocol import Message
+from custom_components.gridworks_connector.protocol import Message, Observations
 from custom_components.gridworks_connector.transport import ShadowMqtt
 
 pytestmark = [
@@ -77,6 +77,25 @@ def test_shadow_round_trip_over_rabbitmq_mqtt(endpoint):
         )
         assert engine.current_request.preferred_mode == "B"
         assert engine.peer_fresh
+        # A deliberately disconnected endpoint retains application data until receipt.
+        ha.stop()
+        buffered = engine.message(
+            "observations",
+            Observations(observation_set_id="buffered-during-disconnect", readings=[]),
+        )
+        ha.send(buffered)
+        assert any(m.message_id == buffered.message_id for m in engine.journal.pending())
+        ha.start()
+        assert ready_ha.wait(15)
+        for pending in engine.journal.pending():
+            ha.send(pending)
+        drain_until(
+            lambda: (
+                peer.received.get("observations", {}).get("Payload", {}).get("ObservationSetId")
+                == "buffered-during-disconnect"
+                and not any(m.message_id == buffered.message_id for m in engine.journal.pending())
+            )
+        )
     finally:
         ha.stop()
         cloud.stop()
