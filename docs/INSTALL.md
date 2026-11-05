@@ -109,8 +109,16 @@ observations are reassigned or removed. Weather confirmation explicitly sends it
 selection to the shadow peer when that form is submitted.
 
 For an existing installation, overwrite only the extracted gridworks_connector
-component with beta.3, including its new frontend folder, and restart HA. Keep
+component with beta.4, including its new frontend folder, and restart HA. Keep
 normal HA configuration/storage intact. Existing entries and stable channel IDs
 are read directly; no deletion or recommissioning is required. Refresh the browser
 after the restart, then use Configure. No other HA app/add-on or cloud credentials
 are needed for the grouped embedded demonstration.
+
+## Configure page error in beta.3
+
+Beta.3 could display [object Object] when Configure opened. Its internal data
+wrapper was not serializable through HA's HTTP form response. Beta.4 uses HA's
+object selector, displays readable request errors, and includes a full native HTTP
+open/edit/save regression. Replace the complete component with beta.4 and restart;
+existing saved definitions remain compatible.

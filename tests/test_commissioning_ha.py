@@ -208,12 +208,16 @@ async def test_browser_http_round_trip_serializes_dashboard_editors_and_save(
     await hass.config_entries.async_unload(entry.entry_id)
 
 
-async def test_commissioning_http_requires_admin(
-    hass, profile, hass_client, hass_read_only_access_token
-):
+async def test_commissioning_http_requires_admin(hass, profile, hass_client, hass_read_only_user):
     entry, existing = await start(hass, profile)
     hass.config_entries.options.async_abort(existing["flow_id"])
-    client = await hass_client(hass_read_only_access_token)
+    refresh = await hass.auth.async_create_refresh_token(
+        hass_read_only_user, client_id="https://test.example/"
+    )
+    token = hass.auth.async_create_access_token(refresh)
+    client = await hass_client(token)
+    response = await client.get("/api/")
+    assert response.status == 200
     response = await client.post(
         "/api/config/config_entries/options/flow", json={"handler": entry.entry_id}
     )
