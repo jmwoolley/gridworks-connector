@@ -49,7 +49,7 @@ export class GridworksCommissioning extends HTMLElement {
   set hass(value) { this._hass=value; if (this.isConnected && !this._started) this.start(); }
   get hass() { return this._hass; }
   connectedCallback() { if (this._hass && !this._started) this.start(); }
-  disconnectedCallback() { if (this._flowId) this._hass.callApi("DELETE", `${FLOW}/${this._flowId}`).catch(()=>{}); }
+  disconnectedCallback() { const id=this._flowId; this._flowId=null; this._started=false; if (id) this._hass.callApi("DELETE", `${FLOW}/${id}`).catch(()=>{}); }
   async start() {
     this._started=true; this._busy=true; this.render();
     try {
@@ -97,7 +97,7 @@ export class GridworksCommissioning extends HTMLElement {
     finally { this._busy=false; this.render(); }
   }
   async discard(entry) {
-    if (this._view?.dirty && !window.confirm("Discard the unsaved definition changes?")) return;
+    if (this._view?.dirty && !window.confirm("Discard the unsaved definition changes?")) { this.render(); return; }
     this._busy=true; this.render();
     try {
       if (this._flowId) await this.hass.callApi("DELETE", `${FLOW}/${this._flowId}`);
