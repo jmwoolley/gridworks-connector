@@ -37,7 +37,7 @@ class Editor:
 
     def initialize(self, source=None):
         self.profile = copy.deepcopy(
-            source
+            (dict(source) if source is not None else None)
             or {
                 "name": "",
                 "resource_id": str(uuid4()),
