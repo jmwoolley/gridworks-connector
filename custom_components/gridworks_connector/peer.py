@@ -119,6 +119,9 @@ class ShadowPeer:
                 self.seen.clear()
                 self.current_request_id = None
                 self.last_request_window = None
+                self.proposal = None
+                self.weather = None
+                self.weather_backups = []
             self.resource_id, self.session, self.revision = (
                 msg.resource_id,
                 msg.session_id,
@@ -151,26 +154,26 @@ class ShadowPeer:
         replies = [self.make("receipt", Receipt(message_id=msg.message_id, status="ingested"))]
         if not msg.historical:
             if msg.kind == "resource.config":
-                self.proposal = WeatherProposal(
-                    proposal_id=str(uuid4()),
-                    sources=[
-                        WeatherSource(
-                            source_id="site",
-                            label="Commissioned local observations",
-                            coverage="Selected site sensors only",
-                            variables=["temperature", "rain", "irradiance"],
-                            provenance="test_catalog",
-                        ),
-                        WeatherSource(
-                            source_id="remote-pending",
-                            label="Remote source pending review",
-                            coverage="Test catalog entry; not live weather",
-                            variables=["temperature"],
-                            provenance="test_catalog",
-                        ),
-                    ],
-                )
-
+                if self.proposal is None:
+                    self.proposal = WeatherProposal(
+                        proposal_id=str(uuid4()),
+                        sources=[
+                            WeatherSource(
+                                source_id="site",
+                                label="Commissioned local observations",
+                                coverage="Selected site sensors only",
+                                variables=["temperature", "rain", "irradiance"],
+                                provenance="test_catalog",
+                            ),
+                            WeatherSource(
+                                source_id="remote-pending",
+                                label="Remote source pending review",
+                                coverage="Test catalog entry; not live weather",
+                                variables=["temperature"],
+                                provenance="test_catalog",
+                            ),
+                        ],
+                    )
                 replies.append(self.make("weather.proposal", self.proposal))
                 calculated = self.calculated_context()
                 if calculated is not None:

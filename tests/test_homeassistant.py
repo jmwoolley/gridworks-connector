@@ -144,4 +144,12 @@ async def test_weather_ui_confirms_proposal_and_backup(hass, profile):
     assert result["step_id"] == "menu"
     assert entry.runtime_data.engine.weather_selection["primary_source"] == "site"
     assert entry.runtime_data.peer.weather == "site"
+    proposal_id = entry.runtime_data.engine.weather_proposal.proposal_id
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {"next_step_id": "finish"}
+    )
+    await hass.async_block_till_done()
+    assert entry.runtime_data.profile["revision"] == 1
+    assert entry.runtime_data.engine.weather_proposal.proposal_id == proposal_id
+    assert entry.runtime_data.engine.weather_selection["primary_source"] == "site"
     await hass.config_entries.async_unload(entry.entry_id)

@@ -573,5 +573,7 @@ class ConnectorOptionsFlow(Editor, config_entries.OptionsFlowWithReload):
         return await self.async_step_menu()
 
     def complete(self):
-        self.profile["revision"] += 1
+        previous = dict(self.config_entry.options or self.config_entry.data)
+        if self.profile != previous:
+            self.profile["revision"] += 1
         return self.async_create_entry(data=self.profile)
