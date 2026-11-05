@@ -1,7 +1,7 @@
 """Shared constants. No live actuation capability exists in this integration."""
 
 DOMAIN = "gridworks_connector"
-VERSION = "0.1.0-beta.1"
+VERSION = "0.1.0-beta.2"
 PROTOCOL_REVISION = "draft-2026-11-05"
 PREFIX = "gw.thermal."
 HEARTBEAT_SECONDS = 60

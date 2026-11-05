@@ -12,13 +12,13 @@ work has not updated or installed anything on the live instance.
 
 ## Manual installation
 
-1. Download `gridworks-connector-0.1.0-beta.1.zip` from the successful branch build artifact,
+1. Download `gridworks-connector-0.1.0-beta.2.zip` from the successful branch build artifact,
    or obtain the same ZIP from the developer. BUILD_INFO.json identifies its exact commit.
 2. Extract only `custom_components/gridworks_connector` into the HA configuration directory.
    The usual resulting folder is `/config/custom_components/gridworks_connector`.
    Do not overwrite the whole custom_components directory or put code in an app/add-on.
 3. Restart HA at an appropriate time for the existing installation.
-4. Open **Settings → Devices & services → Add integration → GridWorks Connector**.
+4. Open **Settings â†’ Devices & services â†’ Add integration â†’ GridWorks Connector**.
 5. Give the resource a name. Keep **Embedded demonstration** as the transport for the
    first interface review; no cloud credentials are needed for that mode.
 
@@ -57,11 +57,11 @@ Open the integration's device page:
 - **Shadow participation** can pause hypothetical pursuit while observations continue.
 - **System changed** and **Acknowledge reassessment notices** exercise those message paths.
 
-Use **Configure → Edit a commissioned definition** to refine channels, modes, meters or
+Use **Configure â†’ Edit a commissioned definition** to refine channels, modes, meters or
 services. Labels/limits can retain a channel ID; selecting a replacement source produces a
 new identity and configuration revision.
 
-Use **Configure → Review proposed weather sources** to select a primary and multiple
+Use **Configure â†’ Review proposed weather sources** to select a primary and multiple
 backups and explicitly confirm them. The embedded catalog is a test catalog, not live
 weather-provider discovery. Solar geometry can be calculated from commissioned coordinates;
 it is separate from measured irradiance.
@@ -84,3 +84,11 @@ Configuration/mappings and bounded SQLite journals live under HA's normal config
 outside the installed code folder. Protect backups and test matching-version recovery.
 Remove/unload the integration through HA if needed; the draft has no physical-control
 handover to unwind. Existing HVAC controls continue independently.
+
+## Fixing the beta.1 setup error
+
+Beta.1 pinned pydantic2.14.3, conflicting with HA2026.11.0's installer constraint
+pydantic2.14.1. This prevented setup from loading with HTTP500 before any resource
+was commissioned. Beta.2 corrects that requirement and adds a constrained-install
+CI gate. Replace the component with beta.2 and restart HA before retrying. Do not
+change HA's own constraint file or manually force a different global package.

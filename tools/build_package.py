@@ -14,7 +14,7 @@ commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=Tr
 metadata = {
     "source_repository": "https://github.com/jmwoolley/gridworks-connector",
     "source_commit": commit,
-    "version": "0.1.0-beta.1",
+    "version": "0.1.0-beta.2",
     "target_ha": "2026.11.0",
     "protocol_revision": "draft-2026-11-05",
     "protocol_status": "proposed_not_registered",
@@ -45,9 +45,9 @@ files = [
     for file in component.rglob("*")
     if file.is_file() and "__pycache__" not in file.parts and file.suffix != ".pyc"
 ]
-package("gridworks-connector-0.1.0-beta.1.zip", files)
+package("gridworks-connector-0.1.0-beta.2.zip", files)
 review = [file for file in (root / "docs").rglob("*") if file.is_file()]
 review += [root / "README.md", root / "pyproject.toml", root / "uv.lock"]
 review += [file for file in files if file.suffix == ".py"]
 review += [root / "tools/shadow_peer.py"]
-package("gridworks-connector-review-0.1.0-beta.1.zip", review)
+package("gridworks-connector-review-0.1.0-beta.2.zip", review)
