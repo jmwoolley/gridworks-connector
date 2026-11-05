@@ -16,6 +16,18 @@ def main():
     manifest = json.loads(
         (root / "custom_components/gridworks_connector/manifest.json").read_text()
     )
+    requirements = list(manifest["requirements"])
+    seen = set()
+    pending = list(manifest.get("dependencies", []))
+    while pending:
+        domain = pending.pop()
+        if domain in seen:
+            continue
+        seen.add(domain)
+        source = files("homeassistant").joinpath("components", domain, "manifest.json")
+        core_manifest = json.loads(source.read_text())
+        requirements.extend(core_manifest.get("requirements", []))
+        pending.extend(core_manifest.get("dependencies", []))
     constraints = files("homeassistant").joinpath("package_constraints.txt")
     subprocess.run(
         [
@@ -25,7 +37,7 @@ def main():
             "install",
             "--constraint",
             str(constraints),
-            *manifest["requirements"],
+            *requirements,
         ],
         check=True,
     )
